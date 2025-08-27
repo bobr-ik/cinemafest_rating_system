@@ -10,7 +10,7 @@ os.makedirs('графики', exist_ok=True)
 def plot_average_scores(data):
     fig, ax = plt.subplots(figsize=(12, 8))
     
-    categories = list(data['фильм 1'].keys())
+    categories = list(list(data.values())[0].keys())
     films = list(data.keys())
     
     # Вычисляем средние оценки для каждого фильма по категориям
@@ -24,12 +24,17 @@ def plot_average_scores(data):
     
     # Настройки для группированных столбцов
     x = np.arange(len(categories))
-    width = 0.35
+    width =  1/ (1 +len(data))
     
-    # Создаем столбцы для каждого фильма
-    bars1 = ax.bar(x - width/2, averages['фильм 1'], width, label='Фильм 1', alpha=0.8)
-    bars2 = ax.bar(x + width/2, averages['фильм 2'], width, label='Фильм 2', alpha=0.8)
-    
+   # Создаем столбцы для каждого фильма
+    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9A602', '#96CEB4', '#FFEAA7']  # Добавляем больше цветов на случай большего количества фильмов
+    bars = []
+
+    for i, (film_name, film_avg) in enumerate(averages.items()):
+        offset = width * (i - (len(averages) - 1) / 2)  # Центрируем столбцы
+        bar = ax.bar(x + offset, film_avg, width, label=film_name, alpha=0.8, color=colors[i % len(colors)])
+        bars.append(bar)
+
     # Настройка внешнего вида
     ax.set_xlabel('Категории оценки')
     ax.set_ylabel('Средняя оценка')
@@ -37,58 +42,61 @@ def plot_average_scores(data):
     ax.set_xticks(x)
     ax.set_xticklabels(categories)
     ax.legend()
-    
+
     # Добавляем значения на столбцы
-    for bar in bars1 + bars2:
-        height = bar.get_height()
-        ax.annotate(f'{height:.1f}',
-                   xy=(bar.get_x() + bar.get_width() / 2, height),
-                   xytext=(0, 3),
-                   textcoords="offset points",
-                   ha='center', va='bottom')
-    
+    for bar_group in bars:
+        for bar in bar_group:
+            height = bar.get_height()
+            ax.annotate(f'{height:.1f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig('графики/столбчатая_диаграмма_средних_оценок.png')
 
 # Вариант 2: Радарная диаграмма для сравнения фильмов
 def plot_radar_chart(data):
-    categories = list(data['фильм 1'].keys())
+    categories = list(list(data.values())[0].keys())
     N = len(categories)
+    films = list(data.keys())
     
-    # Вычисляем средние оценки
-    avg_film1 = []
-    avg_film2 = []
-    for category in categories:
-        scores1 = [rate['value'] for rate in data['фильм 1'][category]]
-        scores2 = [rate['value'] for rate in data['фильм 2'][category]]
-        avg_film1.append(sum(scores1) / len(scores1))
-        avg_film2.append(sum(scores2) / len(scores2))
+    # Цвета для разных фильмов
+    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9A602', '#96CEB4', '#FFEAA7']
     
     # Углы для радарной диаграммы
     angles = [n / float(N) * 2 * np.pi for n in range(N)]
     angles += angles[:1]  # Замыкаем круг
     
-    avg_film1 += avg_film1[:1]
-    avg_film2 += avg_film2[:1]
-    
     fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
     
-    # Рисуем графики
-    ax.plot(angles, avg_film1, 'o-', linewidth=2, label='Фильм 1')
-    ax.fill(angles, avg_film1, alpha=0.25)
-    ax.plot(angles, avg_film2, 'o-', linewidth=2, label='Фильм 2')
-    ax.fill(angles, avg_film2, alpha=0.25)
+    # Рисуем графики для каждого фильма
+    for i, film in enumerate(films):
+        # Вычисляем средние оценки для текущего фильма
+        avg_scores = []
+        for category in categories:
+            scores = [rate['value'] for rate in data[film][category]]
+            avg_score = sum(scores) / len(scores)
+            avg_scores.append(avg_score)
+        
+        # Замыкаем круг для радарной диаграммы
+        avg_scores += avg_scores[:1]
+        
+        # Рисуем график
+        ax.plot(angles, avg_scores, 'o-', linewidth=2, label=film, color=colors[i % len(colors)])
+        ax.fill(angles, avg_scores, alpha=0.25, color=colors[i % len(colors)])
     
     # Настройка внешнего вида
     ax.set_thetagrids(np.degrees(angles[:-1]), categories)
     ax.set_ylim(0, 10)
     ax.set_title('Сравнение фильмов по категориям оценок', size=15, pad=20)
-    ax.legend(loc='upper right')
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
     
     plt.tight_layout()
-    plt.savefig('графики/радарная_диаграмма.png')
-
+    plt.savefig('графики/радарная_диаграмма.png', dpi=300, bbox_inches='tight')
+    plt.close()
 # Функция для расчета общей средней оценки фильма
 def calculate_overall_average(film_data):
     all_scores = []
@@ -105,7 +113,7 @@ def plot_overall_average_scores(data):
     overall_averages = [calculate_overall_average(data[film]) for film in films]
     
     # Цвета для столбцов
-    colors = ['#FF6B6B', '#4ECDC4']
+    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9A602', '#96CEB4', '#FFEAA7']
     
     # Создаем столбцы
     bars = ax.bar(films, overall_averages, color=colors, alpha=0.8, edgecolor='black', linewidth=1)
@@ -145,38 +153,54 @@ def plot_overall_average_scores(data):
 
 # Вариант 5: Круговые диаграммы для каждого фильма
 def plot_pie_charts_comparison(data):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+    films = list(data.keys())
+    categories = list(list(data.values())[0].keys())
+    colors = ['#FF9999', '#66B3FF', '#99FF99', '#FFCC99', '#FF99CC', '#C9A0DC']
     
-    categories = list(data['фильм 1'].keys())
-    colors = ['#FF9999', '#66B3FF', '#99FF99', '#FFCC99']
+    # Определяем количество строк и столбцов (максимум 2 в строке)
+    n_films = len(films)
+    n_cols = min(2, n_films)  # Максимум 2 столбца
+    n_rows = (n_films + n_cols - 1) // n_cols  # Округление вверх
     
-    # Для первого фильма
-    film1_avgs = []
-    for category in categories:
-        scores = [rate['value'] for rate in data['фильм 1'][category]]
-        film1_avgs.append(sum(scores) / len(scores))
+    # Создаем сетку подграфиков
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
     
-    wedges1, texts1, autotexts1 = ax1.pie(film1_avgs, labels=categories, colors=colors,
+    # Преобразуем axes в плоский массив для удобства
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([axes])
+    axes = axes.flatten()
+    
+    # Для каждого фильма
+    for i, film in enumerate(films):
+        ax = axes[i]
+        
+        # Вычисляем средние оценки для текущего фильма
+        film_avgs = []
+        for category in categories:
+            scores = [rate['value'] for rate in data[film][category]]
+            film_avgs.append(sum(scores) / len(scores))
+        
+        # Создаем круговую диаграмму
+        wedges, texts, autotexts = ax.pie(film_avgs, labels=categories, colors=colors,
                                          autopct='%1.1f%%', startangle=90)
-    ax1.set_title('Фильм 1: Распределение средних оценок по категориям', fontsize=14)
-    
-    # Для второго фильма
-    film2_avgs = []
-    for category in categories:
-        scores = [rate['value'] for rate in data['фильм 2'][category]]
-        film2_avgs.append(sum(scores) / len(scores))
-    
-    wedges2, texts2, autotexts2 = ax2.pie(film2_avgs, labels=categories, colors=colors,
-                                         autopct='%1.1f%%', startangle=90)
-    ax2.set_title('Фильм 2: Распределение средних оценок по категориям', fontsize=14)
-    
-    # Делаем центр круга пустым для лучшего вида
-    for ax in [ax1, ax2]:
+        ax.set_title(f'{film}', fontsize=14, pad=20)
+        
+        # Делаем центр круга пустым для лучшего вида
         centre_circle = plt.Circle((0,0), 0.70, fc='white')
         ax.add_artist(centre_circle)
+        
+        # Настраиваем внешний вид текста
+        for autotext in autotexts:
+            autotext.set_color('black')
+            autotext.set_fontweight('bold')
+    
+    # Скрываем пустые subplots, если они есть
+    for i in range(len(films), len(axes)):
+        axes[i].set_visible(False)
     
     plt.tight_layout()
-    plt.savefig('графики/круговые_диаграммы.png')
+    plt.savefig('графики/круговые_диаграммы.png', dpi=300, bbox_inches='tight')
+    plt.close()
 
 
 

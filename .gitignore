@@ -2,3 +2,5 @@
 .env
 __pycache__
 credentials.json
+графики/
+отчет_с_графиками.md
