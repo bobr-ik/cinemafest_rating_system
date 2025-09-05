@@ -125,6 +125,7 @@ def plot_overall_average_scores(data):
     ax.set_xlabel('Фильмы')
     ax.set_ylabel('Средняя оценка')
     ax.set_title('Общая средняя оценка фильмов', fontsize=16, pad=20)
+    ax.set_ylim(0, 10)
     
     
     # Добавляем сетку
