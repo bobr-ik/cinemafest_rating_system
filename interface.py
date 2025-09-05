@@ -102,8 +102,8 @@ def calculate_overall_average(film_data):
     all_scores = []
     for category in film_data:
         for rate in film_data[category]:
-            all_scores.append(rate['value'])
-    return sum(all_scores) / len(all_scores) if all_scores else 0
+            all_scores.append(rate['value'] * rate['weight'])
+    return sum(all_scores)
 
 # Вариант 4: График средней оценки по всему фильму
 def plot_overall_average_scores(data):
@@ -122,7 +122,7 @@ def plot_overall_average_scores(data):
     ax.set_xlabel('Фильмы')
     ax.set_ylabel('Средняя оценка')
     ax.set_title('Общая средняя оценка фильмов', fontsize=16, pad=20)
-    ax.set_ylim(0, 10)
+    
     
     # Добавляем сетку
     ax.grid(True, alpha=0.3, axis='y')
@@ -163,7 +163,7 @@ def plot_pie_charts_comparison(data):
     n_rows = (n_films + n_cols - 1) // n_cols  # Округление вверх
     
     # Создаем сетку подграфиков
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 4 * n_rows))
     
     # Преобразуем axes в плоский массив для удобства
     if n_rows == 1 and n_cols == 1:
