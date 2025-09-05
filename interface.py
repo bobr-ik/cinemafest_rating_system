@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 import os
+from config import settings
 
 
 os.makedirs('графики', exist_ok=True)
@@ -101,8 +102,10 @@ def plot_radar_chart(data):
 def calculate_overall_average(film_data):
     all_scores = []
     for category in film_data:
+        category_scores = []
         for rate in film_data[category]:
-            all_scores.append(rate['value'] * rate['weight'])
+            category_scores.append(rate['value'])
+        all_scores.append(sum(category_scores) / len(category_scores) * settings.criteria_weights.get(category, 1))
     return sum(all_scores)
 
 # Вариант 4: График средней оценки по всему фильму

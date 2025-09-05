@@ -27,7 +27,7 @@ def extract_data_from_sheet(table: Spreadsheet, sheet_name: str) -> List[Dict]:
             criterion, film_name = key.split(' | ')
 
             rating[film_name] = rating.get(film_name, defaultdict(list))
-            rating[film_name][criterion] += [{'jury': jury, 'value': value, 'weight': settings.criteria_weights.get(criterion, 1)}]
+            rating[film_name][criterion] += [{'jury': jury, 'value': value}]
             
     return rating
 
