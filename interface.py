@@ -5,7 +5,7 @@ import os
 from config import settings
 
 
-os.makedirs('графики', exist_ok=True)
+os.makedirs('graphs', exist_ok=True)
 
 # Вариант 1: Столбчатая диаграмма средних оценок по категориям для каждого фильма
 def plot_average_scores(data):
@@ -56,7 +56,7 @@ def plot_average_scores(data):
 
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig('графики/столбчатая_диаграмма_средних_оценок.png')
+    plt.savefig('graphs/столбчатая_диаграмма_средних_оценок.png')
 
 # Вариант 2: Радарная диаграмма для сравнения фильмов
 def plot_radar_chart(data):
@@ -73,7 +73,7 @@ def plot_radar_chart(data):
     
     fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
     
-    # Рисуем графики для каждого фильма
+    # Рисуем graphs для каждого фильма
     for i, film in enumerate(films):
         # Вычисляем средние оценки для текущего фильма
         avg_scores = []
@@ -96,7 +96,7 @@ def plot_radar_chart(data):
     ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
     
     plt.tight_layout()
-    plt.savefig('графики/радарная_диаграмма.png', dpi=300, bbox_inches='tight')
+    plt.savefig('graphs/радарная_диаграмма.png', dpi=300, bbox_inches='tight')
     plt.close()
 # Функция для расчета общей средней оценки фильма
 def calculate_overall_average(film_data):
@@ -148,7 +148,7 @@ def plot_overall_average_scores(data):
     
     ax.legend()
     plt.tight_layout()
-    plt.savefig('графики/общая_средняя_оценка.png')
+    plt.savefig('graphs/общая_средняя_оценка.png')
     
     # Выводим числовые значения
     print("Общие средние оценки:")
@@ -203,7 +203,7 @@ def plot_pie_charts_comparison(data):
         axes[i].set_visible(False)
     
     plt.tight_layout()
-    plt.savefig('графики/круговые_диаграммы.png', dpi=300, bbox_inches='tight')
+    plt.savefig('graphs/круговые_диаграммы.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -219,28 +219,28 @@ def generate_md_report_with_graphs():
 Ниже представлены все созданные графики для визуального анализа оценок фильмов.
 
 ### 1. Средние оценки по категориям
-![Средние оценки по категориям](графики/столбчатая_диаграмма_средних_оценок.png)
+![Средние оценки по категориям](graphs/столбчатая_диаграмма_средних_оценок.png)
 
 *Сравнение средних оценок двух фильмов по различным категориям*
 
 ---
 
 ### 2. Радарная диаграмма сравнения
-![Радарная диаграмма](графики/радарная_диаграмма.png)
+![Радарная диаграмма](graphs/радарная_диаграмма.png)
 
 *Визуальное сравнение сильных и слабых сторон фильмов*
 
 ---
 
 ### 3. Общая средняя оценка фильмов
-![Общая средняя оценка](графики/общая_средняя_оценка.png)
+![Общая средняя оценка](graphs/общая_средняя_оценка.png)
 
 *Сравнение итоговых средних оценок по всем фильмам*
 
 ---
 
 ### 4. Распределение оценок по категориям
-![Круговые диаграммы](графики/круговые_диаграммы.png)
+![Круговые диаграммы](graphs/круговые_диаграммы.png)
 
 *Процентное распределение средних оценок по категориям для каждого фильма*
 
